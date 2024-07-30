@@ -1,0 +1,138 @@
+from sklearn.ensemble import RandomForestClassifier
+
+# Initialize the classifier with OOB enabled
+rf = RandomForestClassifier(n_estimators=500, oob_score=True)
+
+# Fit the model
+rf.fit(X_train, y_train)
+
+# Get the OOB score
+oob_score = rf.oob_score_
+print(f"OOB Score: {oob_score}")
+
+# OOB score will typically stabilize after a certain number of estimators
+
+
+
+
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+# Range of estimators to try
+n_estimators_range = range(10, 310, 20)
+cv_scores = []
+
+# Loop over different n_estimators values
+for n in n_estimators_range:
+    rf = RandomForestClassifier(n_estimators=n)
+    scores = cross_val_score(rf, X_train, y_train, cv=5, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+# Plotting the results
+plt.plot(n_estimators_range, cv_scores)
+plt.xlabel('Number of Estimators')
+plt.ylabel('Cross-Validation Accuracy')
+plt.title('Estimators vs Accuracy')
+plt.show()
+
+
+import matplotlib.pyplot as plt
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.model_selection import cross_val_score
+
+# Range of estimators to try
+n_estimators_range = range(50, 350, 50)
+cv_scores = []
+
+# Loop over different n_estimators values
+for n in n_estimators_range:
+    ada = AdaBoostClassifier(n_estimators=n)
+    scores = cross_val_score(ada, X_train, y_train, cv=5, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+# Plotting the results
+plt.plot(n_estimators_range, cv_scores)
+plt.xlabel('Number of Estimators')
+plt.ylabel('Cross-Validation Accuracy')
+plt.title('Estimators vs Accuracy')
+plt.show()
+
+
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import accuracy_score
+
+# Split the dataset into training and validation sets
+X_train_sub, X_val, y_train_sub, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+# Initialize an AdaBoost classifier
+ada = AdaBoostClassifier(n_estimators=1000)
+
+# Lists to store scores
+train_scores = []
+val_scores = []
+
+# Training and evaluating
+for n in range(1, 1001):
+    ada.set_params(n_estimators=n)
+    ada.fit(X_train_sub, y_train_sub)
+    train_scores.append(accuracy_score(y_train_sub, ada.predict(X_train_sub)))
+    val_scores.append(accuracy_score(y_val, ada.predict(X_val)))
+
+# Plotting the results
+plt.plot(range(1, 1001), train_scores, label='Training accuracy')
+plt.plot(range(1, 1001), val_scores, label='Validation accuracy')
+plt.xlabel('Number of Estimators')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+# Find the number of estimators with the best validation accuracy
+optimal_n_estimators = val_scores.index(max(val_scores)) + 1
+print(f"Optimal number of estimators: {optimal_n_estimators}")
+
+
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split
+
+# Split the data into training and validation sets
+X_train_sub, X_val, y_train_sub, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+# Initialize an XGBClassifier
+xgb = XGBClassifier(n_estimators=1000)
+
+# Fit the model with early stopping
+xgb.fit(X_train_sub, y_train_sub,
+        eval_set=[(X_val, y_val)],
+        eval_metric="logloss",
+        early_stopping_rounds=10,
+        verbose=True)
+
+# The best number of estimators
+best_n_estimators = xgb.best_iteration + 1
+print(f"Optimal number of estimators: {best_n_estimators}")
+
+
+
+import matplotlib.pyplot as plt
+from xgboost import XGBClassifier
+from sklearn.model_selection import cross_val_score
+
+# Range of estimators to try
+n_estimators_range = range(50, 350, 50)
+cv_scores = []
+
+# Loop over different n_estimators values
+for n in n_estimators_range:
+    xgb = XGBClassifier(n_estimators=n)
+    scores = cross_val_score(xgb, X_train, y_train, cv=5, scoring='accuracy')
+    cv_scores.append(scores.mean())
+
+# Plotting the results
+plt.plot(n_estimators_range, cv_scores)
+plt.xlabel('Number of Estimators')
+plt.ylabel('Cross-Validation Accuracy')
+plt.title('Estimators vs Accuracy')
+plt.show()
+
+
